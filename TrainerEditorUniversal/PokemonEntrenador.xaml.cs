@@ -21,19 +21,16 @@ namespace TrainerEditorUniversal
     /// </summary>
     public partial class PokemonEntrenador : UserControl
     {
-        public PokemonEntrenador(RomData rom,Entrenador.Equipo.Pokemon pokemon)
+        public PokemonEntrenador(RomData rom, Entrenador.Equipo.Pokemon pokemon)
         {
             InitializeComponent();
-            try
-            {
-                    imgPokemon.SetImage(rom.Pokedex[pokemon.PokemonIndex].Sprites.GetImagenFrontal());
-                    txtNombre.Text = rom.Pokedex[pokemon.PokemonIndex].Nombre;
-                    imgObjeto.SetImage(rom.Objetos[pokemon.Item].ImagenObjeto);
-                
-            }catch(Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
+
+            imgPokemon.SetImage(rom.Pokedex[pokemon.PokemonIndex].Sprites.GetImagenFrontal());
+            txtNombre.Text = rom.Pokedex[pokemon.PokemonIndex].Nombre + "  " + pokemon.Nivel;
+            if(pokemon.Item>0)
+            imgObjeto.SetImage(rom.Objetos[pokemon.Item].ImagenObjeto);
+
+
 
         }
     }
