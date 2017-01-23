@@ -17,7 +17,9 @@
             <ColumnDefinition Width="4*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-            <TextBlock x:Name="txtNombre"/>
+            <Viewbox>
+                <TextBlock x:Name="txtNombre" HorizontalAlignment="Center"/>
+            </Viewbox>
             <Image x:Name="imgObjeto" Grid.Column="1"/>
         </Grid>
     </Grid>

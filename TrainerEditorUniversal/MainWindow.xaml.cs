@@ -26,7 +26,14 @@ namespace TrainerEditorUniversal
         RomData rom;
         public MainWindow()
         {
+            ContextMenu menu = new ContextMenu();
+            MenuItem item = new MenuItem();
             InitializeComponent();
+            item.Header = "Cambiar Rom";
+            item.Click += (s, e) => PideRom();
+            menu.Items.Add(item);
+            ContextMenu = menu;
+
             PideRom();
             if (rom == null)
                 this.Close();
@@ -35,40 +42,45 @@ namespace TrainerEditorUniversal
         private void PideRom()
         {
             OpenFileDialog opn = new OpenFileDialog();
-            Image img;
+            Image img=null;
             opn.Filter = "GBA|*.gba";
 
             if (opn.ShowDialog().GetValueOrDefault())
             {
 
                 rom = new RomData(new RomGBA(opn.FileName));
-                Pokemon.Orden = Pokemon.OrdenPokemon.Nacional;
-                rom.Pokedex.Sort();
-                for (int i = 0; i < rom.Entrenadores.Count; i++)
+                /*  Pokemon.Orden = Pokemon.OrdenPokemon.GameFreak;
+                    rom.Pokedex.Sort(); */
+                if (rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONROJOFUEGO || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONVERDEHOJA)//de momento no es compatible con todos :C
                 {
-                    if (rom.Entrenadores[i].Pokemon.HayObjetosEquipados())
+                    ugEntrenadores.Children.Clear();
+                    ugEquipoEntrenador.Children.Clear();
+                    for (int i = 0; i < rom.Entrenadores.Count; i++)
                     {
-                        try
+                        if (rom.Entrenadores[i].Pokemon.HayObjetosEquipados())
                         {
+
                             img = new Image();
                             img.SetImage(rom.SpritesEntrenadores[rom.Entrenadores[i]]);
                             img.Tag = rom.Entrenadores[i];
                             img.MouseLeftButtonUp += PonEntrenador;
                             ugEntrenadores.Children.Add(img);
-                        }
 
-                        catch { }
+                        }
                     }
-                }
-                Title = rom.RomGBA.NombreRom;
+                    if (img != null)
+                        PonEntrenador(img);
+                    Title = rom.RomGBA.NombreRom;
+                }else { PideRom(); }
 
             }
         }
 
-        private void PonEntrenador(object sender, MouseButtonEventArgs e)
+        private void PonEntrenador(object sender, MouseButtonEventArgs e=null)
         {
             Entrenador entrenadorSeleccionado = ((Image)sender).Tag as Entrenador;
-            Title = entrenadorSeleccionado.Nombre;
+            txtNombreEntrenador.Text = entrenadorSeleccionado.Nombre;
+            imgEntrenador.SetImage(rom.SpritesEntrenadores[entrenadorSeleccionado]);
             ugEquipoEntrenador.Children.Clear();
             for (int i = 0; i < entrenadorSeleccionado.Pokemon.PokemonEquipo.Length; i++)
                 if (entrenadorSeleccionado.Pokemon[i] != null)
