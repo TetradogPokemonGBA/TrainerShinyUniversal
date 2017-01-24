@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using PokemonGBAFrameWork;
 using Gabriel.Cat.Extension;
 using Gabriel.Cat;
+using System.Drawing;
 
 namespace TrainerEditorUniversal
 {
@@ -25,27 +26,18 @@ namespace TrainerEditorUniversal
     {
         public PokemonEntrenador(RomData rom, Entrenador.Equipo.Pokemon pokemon)
         {
-            int indexPokemon;
+
             InitializeComponent();
-            indexPokemon =pokemon.PokemonIndex;
-            try
+            txtNombre.Text += rom.Pokedex[pokemon.Especie].Nombre + " " + pokemon.Nivel;
+            imgPokemon.SetImage(rom.Pokedex[pokemon.Especie].Sprites.GetImagenFrontal());
+            if (!(rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONRUBI || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONZAFIRO))//NO TIENEN IMAGEN
             {
-                if (pokemon.EsDeLaTerceraGeneracion)
-                {
-                    imgPokemon.SetImage(rom.pokedexHoenn[202-indexPokemon ].Sprites.GetImagenFrontal());
-                    txtNombre.Text += "\n" + rom.pokedexHoenn[202 - indexPokemon].Nombre + " " + ((Hex)(int)pokemon.PokemonIndex).ToString() + "-" + ((int)pokemon.PokemonIndex).ToString() + "  " + pokemon.Nivel + " ES NACIONAL";
-                }
-                else
-                {
-                    txtNombre.Text += rom.Pokedex[indexPokemon].Nombre + " " + ((Hex)(int)pokemon.PokemonIndex).ToString() + "-" + ((int)pokemon.PokemonIndex).ToString() + "  " + pokemon.Nivel;
-
-                    imgPokemon.SetImage(rom.Pokedex[indexPokemon].Sprites.GetImagenFrontal());
-                }
-
                 if (pokemon.Item > 0)
                     imgObjeto.SetImage(rom.Objetos[pokemon.Item].ImagenObjeto);
+                else
+                    imgObjeto.SetImage(new Bitmap(1, 1));
+            }
 
-            }catch { }
 
         }
     }

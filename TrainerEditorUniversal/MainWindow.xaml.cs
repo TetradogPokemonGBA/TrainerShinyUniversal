@@ -44,83 +44,114 @@ namespace TrainerEditorUniversal
         private void PideRom()
         {
             OpenFileDialog opn = new OpenFileDialog();
-            System.Windows.Controls.Image img =null;
+            RomGBA romGBA;
+            System.Windows.Controls.Image img = null;
             opn.Filter = "GBA|*.gba";
 
             if (opn.ShowDialog().GetValueOrDefault())
             {
 
-                rom = new RomData(new RomGBA(opn.FileName));
-               // Pokemon.Orden = Pokemon.OrdenPokemon.Local;
-              //  rom.Pokedex.RemoveAt(rom.Pokedex.Count - 1);//huevo
-              //  rom.Pokedex.Pop();//quito a missigno
-             //   rom.Pokedex.Sort();
-         
-                    ugEntrenadores.Children.Clear();
-                    ugEquipoEntrenador.Children.Clear();
-                cmbEntrenadores.Items.Clear();
+                romGBA = new RomGBA(opn.FileName);
+                
+                if (Edicion.EsUnaEdicionDePokemon(Edicion.GetEdicion(romGBA)))
+                {
+                    rom = new RomData(romGBA);
+                    InicializaCampos();
+
                     for (int i = 0; i < rom.Entrenadores.Count; i++)
                     {
-                         
-                            img = new System.Windows.Controls.Image();
-                            if (rom.Entrenadores[i].SpriteIndex < rom.SpritesEntrenadores.Total)
-                                img.SetImage(rom.SpritesEntrenadores[rom.Entrenadores[i]]);
-                            else img.SetImage(new Bitmap(16, 16));
-                            img.Tag = rom.Entrenadores[i];
-                            img.MouseLeftButtonUp += PonEntrenador;
-                            ugEntrenadores.Children.Add(img);
-                            cmbEntrenadores.Items.Add(rom.Entrenadores[i]);
-                   
+
+                        img = new System.Windows.Controls.Image();
+                        if (rom.Entrenadores[i].SpriteIndex < rom.SpritesEntrenadores.Total)
+                            img.SetImage(rom.SpritesEntrenadores[rom.Entrenadores[i]]);
+                        else img.SetImage(new Bitmap(16, 16));
+                        img.Tag = rom.Entrenadores[i];
+                        img.MouseLeftButtonUp += PonEntrenador;
+                        ugEntrenadores.Children.Add(img);
+                        cmbEntrenadores.Items.Add(rom.Entrenadores[i]);
+
                     }
+
                     if (img != null)
                         PonEntrenador(img);
                     Title = rom.RomGBA.NombreRom;
-        
+                }
 
             }
+        }
+
+        private void InicializaCampos()
+        {
+            ugEntrenadores.Children.Clear();
+            ugEquipoEntrenador.Children.Clear();
+            cmbEntrenadores.Items.Clear();
+
+            txtItem1.Text = "";
+            txtItem2.Text = "";
+            txtItem3.Text = "";
+            txtItem4.Text = "";
+            imgItem1.SetImage(new Bitmap(1, 1));
+            imgItem2.SetImage(new Bitmap(1, 1));
+            imgItem3.SetImage(new Bitmap(1, 1));
+            imgItem4.SetImage(new Bitmap(1, 1));
         }
 
         private void PonEntrenador(object sender, MouseButtonEventArgs e = null)
         {
-           PonEntrenador(((System.Windows.Controls.Image)sender).Tag as Entrenador);
-            
+            PonEntrenador(((System.Windows.Controls.Image)sender).Tag as Entrenador);
+
         }
         public void PonEntrenador(Entrenador entrenador)
         {
-            byte[] bytes;
-            try
-            {
-                txtNombreEntrenador.Text = entrenador.Nombre;
+
+            txtNombreEntrenador.Text = entrenador.Nombre;
             if (entrenador.SpriteIndex < rom.SpritesEntrenadores.Total)
                 imgEntrenador.SetImage(rom.SpritesEntrenadores[entrenador]);
             else imgEntrenador.SetImage(new Bitmap(16, 16));
-            if (!(rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONRUBI || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONZAFIRO)) { 
-                imgItem1.SetImage(rom.Objetos[entrenador.Item1].ImagenObjeto);
-                imgItem2.SetImage(rom.Objetos[entrenador.Item2].ImagenObjeto);
-                imgItem3.SetImage(rom.Objetos[entrenador.Item3].ImagenObjeto);
-                imgItem4.SetImage(rom.Objetos[entrenador.Item4].ImagenObjeto);
-            }
-           
-          //  if (rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONROJOFUEGO || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONVERDEHOJA)
+            if (!(rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONRUBI || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONZAFIRO))//NO TIENEN IMAGEN
             {
-                ugEquipoEntrenador.Children.Clear();
-                for (int i = 0; i < entrenador.Pokemon.PokemonEquipo.Length; i++)
-                    if (entrenador.Pokemon[i] != null)
-                        ugEquipoEntrenador.Children.Add(new PokemonEntrenador(rom, entrenador.Pokemon[i]));
+                if (entrenador.Item1 > 0)
+                    imgItem1.SetImage(rom.Objetos[entrenador.Item1].ImagenObjeto);
+                else imgItem1.SetImage(new Bitmap(1, 1));
+                if (entrenador.Item2 > 0)
+                    imgItem2.SetImage(rom.Objetos[entrenador.Item2].ImagenObjeto);
+                else imgItem1.SetImage(new Bitmap(1, 1));
+                if (entrenador.Item3 > 0)
+                    imgItem3.SetImage(rom.Objetos[entrenador.Item3].ImagenObjeto);
+                else imgItem1.SetImage(new Bitmap(1, 1));
+                if (entrenador.Item4 > 0)
+                    imgItem4.SetImage(rom.Objetos[entrenador.Item4].ImagenObjeto);
+                else imgItem4.SetImage(new Bitmap(1, 1));
             }
-           
-                txtDatos.Text = "-Equipo- numero de pokemon " + entrenador.Pokemon.NumeroPokemon;
-                bytes = rom.RomGBA.Datos.SubArray((int)entrenador.Pokemon.OffsetToDataPokemon, (entrenador.Pokemon.HayAtaquesCustom() ? 16 : 8) * entrenador.Pokemon.NumeroPokemon);
-                for (int i = 0; i < entrenador.Pokemon.NumeroPokemon; i++)
-                    txtDatos.Text += "\n" + (i + 1) + "-" + ((Hex)bytes.SubArray(i * (entrenador.Pokemon.HayAtaquesCustom() ? 16 : 8), entrenador.Pokemon.HayAtaquesCustom() ? 16 : 8)).ToString();
+            else
+            {
+                if (entrenador.Item1 > 0)
+                    txtItem1.Text = rom.Objetos[entrenador.Item1].Nombre;
+                else txtItem1.Text = "";
+                if (entrenador.Item2 > 0)
+                    txtItem2.Text = rom.Objetos[entrenador.Item2].Nombre;
+                else txtItem2.Text = "";
+                if (entrenador.Item3 > 0)
+                    txtItem3.Text = rom.Objetos[entrenador.Item3].Nombre;
+                else txtItem3.Text = "";
+                if (entrenador.Item4 > 0)
+                    txtItem4.Text = rom.Objetos[entrenador.Item4].Nombre;
+                else txtItem4.Text = "";
             }
-            catch { }
+
+
+            ugEquipoEntrenador.Children.Clear();
+            for (int i = 0; i < entrenador.Pokemon.PokemonEquipo.Length; i++)
+                if (entrenador.Pokemon[i] != null)
+                    ugEquipoEntrenador.Children.Add(new PokemonEntrenador(rom, entrenador.Pokemon[i]));
+
+
         }
 
         private void cmbEntrenadores_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(cmbEntrenadores.SelectedItem!=null)
-               PonEntrenador(cmbEntrenadores.SelectedItem as Entrenador);
-        } 
+            if (cmbEntrenadores.SelectedItem != null)
+                PonEntrenador(cmbEntrenadores.SelectedItem as Entrenador);
+        }
     }
 }
