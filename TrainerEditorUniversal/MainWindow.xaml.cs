@@ -89,14 +89,13 @@ namespace TrainerEditorUniversal
             if (entrenador.SpriteIndex < rom.SpritesEntrenadores.Total)
                 imgEntrenador.SetImage(rom.SpritesEntrenadores[entrenador]);
             else imgEntrenador.SetImage(new Bitmap(16, 16));
-            try
-            {
+            if (!(rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONRUBI || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONZAFIRO)) { 
                 imgItem1.SetImage(rom.Objetos[entrenador.Item1].ImagenObjeto);
                 imgItem2.SetImage(rom.Objetos[entrenador.Item2].ImagenObjeto);
                 imgItem3.SetImage(rom.Objetos[entrenador.Item3].ImagenObjeto);
                 imgItem4.SetImage(rom.Objetos[entrenador.Item4].ImagenObjeto);
             }
-            catch { }
+           
             if (rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONROJOFUEGO || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONVERDEHOJA)
             {
                 ugEquipoEntrenador.Children.Clear();
