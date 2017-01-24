@@ -30,7 +30,7 @@ namespace TrainerEditorUniversal
             indexPokemon =pokemon.PokemonIndex;
             try
             {
-                if (pokemon.EsNacional)
+                if (pokemon.EsDeLaTerceraGeneracion)
                 {
                     imgPokemon.SetImage(rom.pokedexHoenn[202-indexPokemon ].Sprites.GetImagenFrontal());
                     txtNombre.Text += "\n" + rom.pokedexHoenn[202 - indexPokemon].Nombre + " " + ((Hex)(int)pokemon.PokemonIndex).ToString() + "-" + ((int)pokemon.PokemonIndex).ToString() + "  " + pokemon.Nivel + " ES NACIONAL";
