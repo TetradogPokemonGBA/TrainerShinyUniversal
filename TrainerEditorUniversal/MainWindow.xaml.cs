@@ -51,7 +51,10 @@ namespace TrainerEditorUniversal
             {
 
                 rom = new RomData(new RomGBA(opn.FileName));
-  
+               // Pokemon.Orden = Pokemon.OrdenPokemon.Local;
+              //  rom.Pokedex.RemoveAt(rom.Pokedex.Count - 1);//huevo
+              //  rom.Pokedex.Pop();//quito a missigno
+             //   rom.Pokedex.Sort();
          
                     ugEntrenadores.Children.Clear();
                     ugEquipoEntrenador.Children.Clear();
@@ -85,7 +88,9 @@ namespace TrainerEditorUniversal
         public void PonEntrenador(Entrenador entrenador)
         {
             byte[] bytes;
-            txtNombreEntrenador.Text = entrenador.Nombre;
+            try
+            {
+                txtNombreEntrenador.Text = entrenador.Nombre;
             if (entrenador.SpriteIndex < rom.SpritesEntrenadores.Total)
                 imgEntrenador.SetImage(rom.SpritesEntrenadores[entrenador]);
             else imgEntrenador.SetImage(new Bitmap(16, 16));
@@ -96,15 +101,14 @@ namespace TrainerEditorUniversal
                 imgItem4.SetImage(rom.Objetos[entrenador.Item4].ImagenObjeto);
             }
            
-            if (rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONROJOFUEGO || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONVERDEHOJA)
+          //  if (rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONROJOFUEGO || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONVERDEHOJA)
             {
                 ugEquipoEntrenador.Children.Clear();
                 for (int i = 0; i < entrenador.Pokemon.PokemonEquipo.Length; i++)
                     if (entrenador.Pokemon[i] != null)
                         ugEquipoEntrenador.Children.Add(new PokemonEntrenador(rom, entrenador.Pokemon[i]));
             }
-            try
-            {
+           
                 txtDatos.Text = "-Equipo- numero de pokemon " + entrenador.Pokemon.NumeroPokemon;
                 bytes = rom.RomGBA.Datos.SubArray((int)entrenador.Pokemon.OffsetToDataPokemon, (entrenador.Pokemon.HayAtaquesCustom() ? 16 : 8) * entrenador.Pokemon.NumeroPokemon);
                 for (int i = 0; i < entrenador.Pokemon.NumeroPokemon; i++)

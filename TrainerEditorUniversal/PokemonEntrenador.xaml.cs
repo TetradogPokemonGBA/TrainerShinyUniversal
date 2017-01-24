@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PokemonGBAFrameWork;
 using Gabriel.Cat.Extension;
+using Gabriel.Cat;
+
 namespace TrainerEditorUniversal
 {
     /// <summary>
@@ -23,14 +25,27 @@ namespace TrainerEditorUniversal
     {
         public PokemonEntrenador(RomData rom, Entrenador.Equipo.Pokemon pokemon)
         {
+            int indexPokemon;
             InitializeComponent();
+            indexPokemon =pokemon.PokemonIndex;
+            try
+            {
+                if (pokemon.EsNacional)
+                {
+                    imgPokemon.SetImage(rom.pokedexHoenn[202-indexPokemon ].Sprites.GetImagenFrontal());
+                    txtNombre.Text += "\n" + rom.pokedexHoenn[202 - indexPokemon].Nombre + " " + ((Hex)(int)pokemon.PokemonIndex).ToString() + "-" + ((int)pokemon.PokemonIndex).ToString() + "  " + pokemon.Nivel + " ES NACIONAL";
+                }
+                else
+                {
+                    txtNombre.Text += rom.Pokedex[indexPokemon].Nombre + " " + ((Hex)(int)pokemon.PokemonIndex).ToString() + "-" + ((int)pokemon.PokemonIndex).ToString() + "  " + pokemon.Nivel;
 
-            imgPokemon.SetImage(rom.Pokedex[pokemon.PokemonIndex].Sprites.GetImagenFrontal());
-            txtNombre.Text = rom.Pokedex[pokemon.PokemonIndex].Nombre + "  " + pokemon.Nivel;
-            if(pokemon.Item>0)
-            imgObjeto.SetImage(rom.Objetos[pokemon.Item].ImagenObjeto);
+                    imgPokemon.SetImage(rom.Pokedex[indexPokemon].Sprites.GetImagenFrontal());
+                }
 
+                if (pokemon.Item > 0)
+                    imgObjeto.SetImage(rom.Objetos[pokemon.Item].ImagenObjeto);
 
+            }catch { }
 
         }
     }
