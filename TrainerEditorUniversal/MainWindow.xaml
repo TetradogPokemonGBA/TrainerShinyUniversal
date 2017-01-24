@@ -64,7 +64,9 @@
                             <Image x:Name="imgItem4" />
                         </Viewbox>
                     </Grid>
-
+                    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" >
+                    <TextBlock x:Name="txtDatos"  TextWrapping="Wrap" />
+                    </ScrollViewer>
                 </Grid>
 
 

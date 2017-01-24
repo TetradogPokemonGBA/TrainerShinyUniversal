@@ -16,6 +16,7 @@ using Gabriel.Cat.Extension;
 using PokemonGBAFrameWork;
 using Microsoft.Win32;
 using System.Drawing;
+using Gabriel.Cat;
 
 namespace TrainerEditorUniversal
 {
@@ -50,11 +51,8 @@ namespace TrainerEditorUniversal
             {
 
                 rom = new RomData(new RomGBA(opn.FileName));
-                /*  Pokemon.Orden = Pokemon.OrdenPokemon.GameFreak;
-                    rom.Pokedex.Sort(); */
-                   
-                if (rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONROJOFUEGO || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONVERDEHOJA)//de momento no es compatible con todos :C
-                {
+  
+         
                     ugEntrenadores.Children.Clear();
                     ugEquipoEntrenador.Children.Clear();
                     for (int i = 0; i < rom.Entrenadores.Count; i++)
@@ -72,27 +70,40 @@ namespace TrainerEditorUniversal
                     if (img != null)
                         PonEntrenador(img);
                     Title = rom.RomGBA.NombreRom;
-                }else { PideRom(); }
+        
 
             }
         }
 
-        private void PonEntrenador(object sender, MouseButtonEventArgs e=null)
+        private void PonEntrenador(object sender, MouseButtonEventArgs e = null)
         {
             Entrenador entrenadorSeleccionado = ((System.Windows.Controls.Image)sender).Tag as Entrenador;
+            byte[] bytes;
             txtNombreEntrenador.Text = entrenadorSeleccionado.Nombre;
-            //rom.Objetos[entrenadorSeleccionado.Item1].
-            imgItem1.SetImage(rom.Objetos[entrenadorSeleccionado.Item1].ImagenObjeto);
-            imgItem2.SetImage(rom.Objetos[entrenadorSeleccionado.Item2].ImagenObjeto);
-            imgItem3.SetImage(rom.Objetos[entrenadorSeleccionado.Item3].ImagenObjeto);
-            imgItem4.SetImage(rom.Objetos[entrenadorSeleccionado.Item4].ImagenObjeto);
             if (entrenadorSeleccionado.SpriteIndex < rom.SpritesEntrenadores.Total)
                 imgEntrenador.SetImage(rom.SpritesEntrenadores[entrenadorSeleccionado]);
             else imgEntrenador.SetImage(new Bitmap(16, 16));
-            ugEquipoEntrenador.Children.Clear();
-            for (int i = 0; i < entrenadorSeleccionado.Pokemon.PokemonEquipo.Length; i++)
-                if (entrenadorSeleccionado.Pokemon[i] != null)
-                    ugEquipoEntrenador.Children.Add(new PokemonEntrenador(rom, entrenadorSeleccionado.Pokemon[i]));
+
+            if (rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONROJOFUEGO || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONVERDEHOJA)
+            {
+                imgItem1.SetImage(rom.Objetos[entrenadorSeleccionado.Item1].ImagenObjeto);
+                imgItem2.SetImage(rom.Objetos[entrenadorSeleccionado.Item2].ImagenObjeto);
+                imgItem3.SetImage(rom.Objetos[entrenadorSeleccionado.Item3].ImagenObjeto);
+                imgItem4.SetImage(rom.Objetos[entrenadorSeleccionado.Item4].ImagenObjeto);
+                
+                ugEquipoEntrenador.Children.Clear();
+                for (int i = 0; i < entrenadorSeleccionado.Pokemon.PokemonEquipo.Length; i++)
+                    if (entrenadorSeleccionado.Pokemon[i] != null)
+                        ugEquipoEntrenador.Children.Add(new PokemonEntrenador(rom, entrenadorSeleccionado.Pokemon[i]));
+            }
+            try
+            {
+                txtDatos.Text = "-Equipo- numero de pokemon "+ entrenadorSeleccionado.Pokemon.NumeroPokemon;
+                bytes=rom.RomGBA.Datos.SubArray((int)entrenadorSeleccionado.Pokemon.OffsetToDataPokemon, (entrenadorSeleccionado.Pokemon.HayAtaquesCustom() ? 16 : 8) * entrenadorSeleccionado.Pokemon.NumeroPokemon);
+                for(int i=0;i<entrenadorSeleccionado.Pokemon.NumeroPokemon;i++)
+                txtDatos.Text +="\n"+(i+1)+"-"+((Hex) bytes.SubArray(i* (entrenadorSeleccionado.Pokemon.HayAtaquesCustom() ? 16 : 8), entrenadorSeleccionado.Pokemon.HayAtaquesCustom() ? 16 : 8)).ToString();
+            }
+            catch { }
         }
     }
 }
