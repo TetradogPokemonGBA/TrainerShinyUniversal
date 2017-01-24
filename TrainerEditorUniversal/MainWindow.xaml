@@ -11,9 +11,16 @@
             <ColumnDefinition Width="134*"/>
             <ColumnDefinition Width="383*"/>
         </Grid.ColumnDefinitions>
-        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" >
-            <UniformGrid x:Name="ugEntrenadores"  Columns="2"/>
-        </ScrollViewer>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="59*"/>
+                <RowDefinition Height="5*"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" >
+                <UniformGrid x:Name="ugEntrenadores"  Columns="2"/>
+            </ScrollViewer>
+            <ComboBox x:Name="cmbEntrenadores" Grid.Row="1" IsTextSearchEnabled="True" IsEditable="True" SelectionChanged="cmbEntrenadores_SelectionChanged" />
+        </Grid>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"/>
@@ -65,7 +72,7 @@
                         </Viewbox>
                     </Grid>
                     <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" >
-                    <TextBlock x:Name="txtDatos"  TextWrapping="Wrap" />
+                        <TextBlock x:Name="txtDatos"  TextWrapping="Wrap" />
                     </ScrollViewer>
                 </Grid>
 

@@ -55,6 +55,7 @@ namespace TrainerEditorUniversal
          
                     ugEntrenadores.Children.Clear();
                     ugEquipoEntrenador.Children.Clear();
+                cmbEntrenadores.Items.Clear();
                     for (int i = 0; i < rom.Entrenadores.Count; i++)
                     {
                          
@@ -65,6 +66,7 @@ namespace TrainerEditorUniversal
                             img.Tag = rom.Entrenadores[i];
                             img.MouseLeftButtonUp += PonEntrenador;
                             ugEntrenadores.Children.Add(img);
+                            cmbEntrenadores.Items.Add(rom.Entrenadores[i]);
                    
                     }
                     if (img != null)
@@ -77,33 +79,45 @@ namespace TrainerEditorUniversal
 
         private void PonEntrenador(object sender, MouseButtonEventArgs e = null)
         {
-            Entrenador entrenadorSeleccionado = ((System.Windows.Controls.Image)sender).Tag as Entrenador;
+           PonEntrenador(((System.Windows.Controls.Image)sender).Tag as Entrenador);
+            
+        }
+        public void PonEntrenador(Entrenador entrenador)
+        {
             byte[] bytes;
-            txtNombreEntrenador.Text = entrenadorSeleccionado.Nombre;
-            if (entrenadorSeleccionado.SpriteIndex < rom.SpritesEntrenadores.Total)
-                imgEntrenador.SetImage(rom.SpritesEntrenadores[entrenadorSeleccionado]);
+            txtNombreEntrenador.Text = entrenador.Nombre;
+            if (entrenador.SpriteIndex < rom.SpritesEntrenadores.Total)
+                imgEntrenador.SetImage(rom.SpritesEntrenadores[entrenador]);
             else imgEntrenador.SetImage(new Bitmap(16, 16));
-
+            try
+            {
+                imgItem1.SetImage(rom.Objetos[entrenador.Item1].ImagenObjeto);
+                imgItem2.SetImage(rom.Objetos[entrenador.Item2].ImagenObjeto);
+                imgItem3.SetImage(rom.Objetos[entrenador.Item3].ImagenObjeto);
+                imgItem4.SetImage(rom.Objetos[entrenador.Item4].ImagenObjeto);
+            }
+            catch { }
             if (rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONROJOFUEGO || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONVERDEHOJA)
             {
-                imgItem1.SetImage(rom.Objetos[entrenadorSeleccionado.Item1].ImagenObjeto);
-                imgItem2.SetImage(rom.Objetos[entrenadorSeleccionado.Item2].ImagenObjeto);
-                imgItem3.SetImage(rom.Objetos[entrenadorSeleccionado.Item3].ImagenObjeto);
-                imgItem4.SetImage(rom.Objetos[entrenadorSeleccionado.Item4].ImagenObjeto);
-                
                 ugEquipoEntrenador.Children.Clear();
-                for (int i = 0; i < entrenadorSeleccionado.Pokemon.PokemonEquipo.Length; i++)
-                    if (entrenadorSeleccionado.Pokemon[i] != null)
-                        ugEquipoEntrenador.Children.Add(new PokemonEntrenador(rom, entrenadorSeleccionado.Pokemon[i]));
+                for (int i = 0; i < entrenador.Pokemon.PokemonEquipo.Length; i++)
+                    if (entrenador.Pokemon[i] != null)
+                        ugEquipoEntrenador.Children.Add(new PokemonEntrenador(rom, entrenador.Pokemon[i]));
             }
             try
             {
-                txtDatos.Text = "-Equipo- numero de pokemon "+ entrenadorSeleccionado.Pokemon.NumeroPokemon;
-                bytes=rom.RomGBA.Datos.SubArray((int)entrenadorSeleccionado.Pokemon.OffsetToDataPokemon, (entrenadorSeleccionado.Pokemon.HayAtaquesCustom() ? 16 : 8) * entrenadorSeleccionado.Pokemon.NumeroPokemon);
-                for(int i=0;i<entrenadorSeleccionado.Pokemon.NumeroPokemon;i++)
-                txtDatos.Text +="\n"+(i+1)+"-"+((Hex) bytes.SubArray(i* (entrenadorSeleccionado.Pokemon.HayAtaquesCustom() ? 16 : 8), entrenadorSeleccionado.Pokemon.HayAtaquesCustom() ? 16 : 8)).ToString();
+                txtDatos.Text = "-Equipo- numero de pokemon " + entrenador.Pokemon.NumeroPokemon;
+                bytes = rom.RomGBA.Datos.SubArray((int)entrenador.Pokemon.OffsetToDataPokemon, (entrenador.Pokemon.HayAtaquesCustom() ? 16 : 8) * entrenador.Pokemon.NumeroPokemon);
+                for (int i = 0; i < entrenador.Pokemon.NumeroPokemon; i++)
+                    txtDatos.Text += "\n" + (i + 1) + "-" + ((Hex)bytes.SubArray(i * (entrenador.Pokemon.HayAtaquesCustom() ? 16 : 8), entrenador.Pokemon.HayAtaquesCustom() ? 16 : 8)).ToString();
             }
             catch { }
         }
+
+        private void cmbEntrenadores_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(cmbEntrenadores.SelectedItem!=null)
+               PonEntrenador(cmbEntrenadores.SelectedItem as Entrenador);
+        } 
     }
 }
