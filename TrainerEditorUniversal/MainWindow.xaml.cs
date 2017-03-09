@@ -56,6 +56,7 @@ namespace TrainerEditorUniversal
                 Shinytzer.Desactivar(rom.RomGBA);
             else
                 Shinytzer.Activar(rom.RomGBA);
+            Guardar();
             PonTexto();
 
         }
@@ -94,10 +95,19 @@ namespace TrainerEditorUniversal
                     if (entrenador != null)
                         PonEntrenador(entrenador);
                     Title = "Universal Shiny Trainer:"+ rom.RomGBA.NombreRom;
+                    if (!Shinytzer.EstaActivado(rom.RomGBA))
+                    {
+                        if (MessageBox.Show("No esta instalada la rutina Shinitzer de HackMew, quieres instalarla?", "Atención", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                        { Shinytzer.Activar(rom.RomGBA); Guardar(); }
+                    }
                     PonTexto();
                 }
 
             }
+        }
+        private void Guardar()
+        {
+            rom.RomGBA.Guardar();
         }
 
         private void InicializaCampos()
