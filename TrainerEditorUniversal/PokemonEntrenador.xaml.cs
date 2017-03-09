@@ -24,12 +24,18 @@ namespace TrainerEditorUniversal
     /// </summary>
     public partial class PokemonEntrenador : UserControl
     {
+        private Entrenador entrenador;
+        private bool isShiny;
+        Sprite sprites;
+        public event EventHandler ShinyChanged;
+
         public PokemonEntrenador(RomData rom, Entrenador.Equipo.Pokemon pokemon)
         {
 
             InitializeComponent();
+            sprites = rom.Pokedex[pokemon.Especie].Sprites;
             txtNombre.Text += rom.Pokedex[pokemon.Especie].Nombre + " " + pokemon.Nivel;
-            imgPokemon.SetImage(rom.Pokedex[pokemon.Especie].Sprites.GetImagenFrontal());
+            IsShiny=false;
             if (!(rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONRUBI || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONZAFIRO))//NO TIENEN IMAGEN
             {
                 if (pokemon.Item > 0)
@@ -39,6 +45,49 @@ namespace TrainerEditorUniversal
             }
 
 
+        }
+
+        public PokemonEntrenador(RomData rom, Entrenador.Equipo.Pokemon pokemon, Entrenador entrenador) : this(rom, pokemon)
+        {
+            this.Entrenador = entrenador;
+        }
+
+        public Entrenador Entrenador
+        {
+            get
+            {
+                return entrenador;
+            }
+
+            set
+            {
+                entrenador = value;
+            }
+        }
+
+        public bool IsShiny {
+            get { return isShiny; }
+            set
+            {
+                isShiny = value;
+
+                if (ShinyChanged != null)
+                    ShinyChanged(this, new EventArgs());
+
+                if(isShiny)
+                {
+                    imgPokemon.SetImage(sprites.GetImagenFrontal(1));
+                }
+                else
+                {
+                    imgPokemon.SetImage(sprites.GetImagenFrontal());
+                }
+            }
+        }
+
+        private void Grid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            IsShiny = !IsShiny;
         }
     }
 }

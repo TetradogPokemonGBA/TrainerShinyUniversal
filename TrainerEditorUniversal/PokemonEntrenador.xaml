@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:TrainerEditorUniversal"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid MouseLeftButtonUp="Grid_MouseLeftButtonUp">
         <Grid.RowDefinitions>
             <RowDefinition Height="251*"/>
             <RowDefinition Height="49*"/>

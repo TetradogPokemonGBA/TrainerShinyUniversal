@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrainerEditorUniversal"
         mc:Ignorable="d"
-        Title="Universal Trainer Editor" Height="350" Width="525">
+        Title="Universal Shiny Trainer" Height="350" Width="525">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="134*"/>
@@ -64,43 +64,8 @@
                             <TextBlock x:Name="txtMusica" />
                         </Viewbox>
                     </Grid>
-                    <Grid Grid.Column="1">
+                    <TextBox x:Name="txtScript" Grid.Column="1" IsReadOnly="True" TextWrapping="Wrap"/>
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="5*"/>
-                            <RowDefinition Height="5*"/>
-                            <RowDefinition Height="5*"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Viewbox Grid.Row="1" Grid.Column="0">
-                            <Image x:Name="imgItem1" />
-                        </Viewbox>
-                        <Viewbox Grid.Row="1" Grid.Column="0">
-                            <TextBlock x:Name="txtItem1" />
-                        </Viewbox>
-                        <Viewbox Grid.Row="1" Grid.Column="1">
-                            <Image x:Name="imgItem2" />
-                        </Viewbox>
-                        <Viewbox Grid.Row="1" Grid.Column="1">
-                            <TextBlock x:Name="txtItem2" />
-                        </Viewbox>
-                        <Viewbox Grid.Row="2" Grid.Column="0">
-                            <TextBlock x:Name="txtItem3" />
-                        </Viewbox>
-                        <Viewbox Grid.Row="2" Grid.Column="0">
-                            <Image x:Name="imgItem3" />
-                        </Viewbox>
-                        <Viewbox Grid.Row="2" Grid.Column="1">
-                            <Image x:Name="imgItem4" />
-                        </Viewbox>
-                        <Viewbox Grid.Row="2" Grid.Column="1">
-                            <TextBlock x:Name="txtItem4" />
-                        </Viewbox>
-                    </Grid>
-                  
                 </Grid>
 
 
