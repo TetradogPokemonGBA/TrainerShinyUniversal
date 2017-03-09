@@ -42,11 +42,28 @@
                     </Viewbox>
 
                 </Grid>
+                
                 <Grid Grid.Column="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="2*" />
                     </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Viewbox Grid.Row="0">
+                            <TextBlock x:Name="txtMoneyClass" />
+                        </Viewbox>
+                        <Viewbox Grid.Row="1">
+                            <TextBlock x:Name="txtInteligencia"/>
+                        </Viewbox>
+                        <Viewbox Grid.Row="2">
+                            <TextBlock x:Name="txtMusica" />
+                        </Viewbox>
+                    </Grid>
                     <Grid Grid.Column="1">
 
                         <Grid.RowDefinitions>
