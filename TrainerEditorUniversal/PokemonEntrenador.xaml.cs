@@ -26,28 +26,28 @@ namespace TrainerEditorUniversal
     {
         private Entrenador entrenador;
         private bool isShiny;
-        Sprite sprites;
+        SpritesPokemon sprites;
         public event EventHandler ShinyChanged;
 
-        public PokemonEntrenador(RomData rom, Entrenador.Equipo.Pokemon pokemon)
+        public PokemonEntrenador(RomData rom, PokemonGBAFrameWork.PokemonEntrenador pokemon)
         {
 
             InitializeComponent();
-            sprites = rom.Pokedex[pokemon.Especie].Sprites;
+            sprites = rom.Pokedex[pokemon.Especie].Sprites; 
             txtNombre.Text += rom.Pokedex[pokemon.Especie].Nombre + " " + pokemon.Nivel;
             IsShiny=false;
-            if (!(rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONRUBI || rom.Edicion.AbreviacionRom == Edicion.ABREVIACIONZAFIRO))//NO TIENEN IMAGEN
+            if (!(rom.Edicion.AbreviacionRom == AbreviacionCanon.AXV || rom.Edicion.AbreviacionRom == AbreviacionCanon.AXP))//NO TIENEN IMAGEN
             {
-                if (pokemon.Item > 0)
+              /*  if (pokemon.Item > 0)
                     imgObjeto.SetImage(rom.Objetos[pokemon.Item].ImagenObjeto);
                 else
-                    imgObjeto.SetImage(new Bitmap(1, 1));
+                    imgObjeto.SetImage(new Bitmap(1, 1));*/
             }
 
 
         }
 
-        public PokemonEntrenador(RomData rom, Entrenador.Equipo.Pokemon pokemon, Entrenador entrenador) : this(rom, pokemon)
+        public PokemonEntrenador(RomData rom, PokemonGBAFrameWork.PokemonEntrenador pokemon, Entrenador entrenador) : this(rom, pokemon)
         {
             this.Entrenador = entrenador;
         }
@@ -76,11 +76,11 @@ namespace TrainerEditorUniversal
 
                 if(isShiny)
                 {
-                    imgPokemon.SetImage(sprites.GetImagenFrontal(1));
+                	imgPokemon.SetImage(sprites.SpritesFrontales[0][1]);
                 }
                 else
                 {
-                    imgPokemon.SetImage(sprites.GetImagenFrontal());
+                	imgPokemon.SetImage(sprites.SpritesFrontales[0][0]);
                 }
             }
         }

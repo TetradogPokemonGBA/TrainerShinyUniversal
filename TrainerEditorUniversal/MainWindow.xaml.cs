@@ -52,10 +52,10 @@ namespace TrainerEditorUniversal
 
         private void ActivarDesactivar()
         {
-            if (Shinytzer.EstaActivado(rom.RomGBA))
-                Shinytzer.Desactivar(rom.RomGBA);
+            if (Shinyzer.EstaActivado(rom.Rom))
+            	Shinyzer.Desactivar(rom.Rom);
             else
-                Shinytzer.Activar(rom.RomGBA);
+                Shinyzer.Activar(rom.Rom,rom.Edicion);
             Guardar();
             PonTexto();
 
@@ -63,29 +63,28 @@ namespace TrainerEditorUniversal
 
         private void PonTexto()
         {
-            itemActivarDesactivar.Header = Shinytzer.EstaActivado(rom.RomGBA) ? "Desactivar" : "Activar";
+            itemActivarDesactivar.Header = Shinyzer.EstaActivado(rom.Rom) ? "Desactivar" : "Activar";
         }
 
         private void PideRom()
         {
             OpenFileDialog opn = new OpenFileDialog();
-            RomGBA romGBA;
+            RomGba romGBA;
             EntrenadorPreview entrenador=null;
             opn.Filter = "GBA|*.gba";
 
             if (opn.ShowDialog().GetValueOrDefault())
             {
 
-                romGBA = new RomGBA(opn.FileName);
+                romGBA = new RomGba(opn.FileName);
                 
-                if (Edicion.EsUnaEdicionDePokemon(Edicion.GetEdicion(romGBA)))
-                {
+                try{
                     rom = new RomData(romGBA);
                     InicializaCampos();
 
                     for (int i = 0; i < rom.Entrenadores.Count; i++)
                     {
-                        entrenador = new EntrenadorPreview(i, rom.Entrenadores[i], rom.EntrenadoresClases);
+                        entrenador = new EntrenadorPreview(i, rom.Entrenadores[i], rom.ClasesEntrenadores);
                         entrenador.MouseLeftButtonUp +=(s,e)=> PonEntrenador(s as EntrenadorPreview);
                         ugEntrenadores.Children.Add(entrenador);
                         cmbEntrenadores.Items.Add(rom.Entrenadores[i]);
@@ -94,20 +93,21 @@ namespace TrainerEditorUniversal
 
                     if (entrenador != null)
                         PonEntrenador(entrenador);
-                    Title = "Universal Shiny Trainer:"+ rom.RomGBA.NombreRom;
-                    if (!Shinytzer.EstaActivado(rom.RomGBA))
+                    Title = "Universal Shiny Trainer:"+ rom.Rom.Nombre;
+                    if (!Shinyzer.EstaActivado(rom.Rom))
                     {
                         if (MessageBox.Show("No esta instalada la rutina Shinitzer de HackMew, quieres instalarla?", "Atención", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
-                        { Shinytzer.Activar(rom.RomGBA); Guardar(); }
+                        { Shinyzer.Activar(rom.Rom,rom.Edicion); Guardar(); }
                     }
                     PonTexto();
-                }
+                    cmbEntrenadores.SelectedIndex=0;
+                }catch{}
 
             }
         }
         private void Guardar()
         {
-            rom.RomGBA.Guardar();
+            rom.Rom.Save();
         }
 
         private void InicializaCampos()
@@ -128,21 +128,21 @@ namespace TrainerEditorUniversal
         {
             PokemonEntrenador pokemonEntrenador;
             txtNombreEntrenador.Text = entrenador.Nombre;
-            if (entrenador.SpriteIndex < rom.EntrenadoresClases.Total)
-                imgEntrenador.SetImage(rom.EntrenadoresClases.Sprites[entrenador.SpriteIndex]);
+            if (entrenador.SpriteIndex < rom.ClasesEntrenadores.Count)
+                imgEntrenador.SetImage(rom.ClasesEntrenadores[entrenador.SpriteIndex].Sprite);
             else imgEntrenador.SetImage(new Bitmap(16, 16));
 
             ugEquipoEntrenador.Children.Clear();
-            for (int i = 0; i < entrenador.Pokemon.PokemonEquipo.Length; i++)
-                if (entrenador.Pokemon[i] != null)
+            for (int i = 0; i < entrenador.EquipoPokemon.Equipo.Length; i++)
+                if (entrenador.EquipoPokemon.Equipo[i] != null)
                 {
-                    pokemonEntrenador = new PokemonEntrenador(rom, entrenador.Pokemon[i],entrenador);
+                    pokemonEntrenador = new PokemonEntrenador(rom, entrenador.EquipoPokemon.Equipo[i],entrenador);
                     pokemonEntrenador.ShinyChanged += (s, e) => GenerarScript(pokemonEntrenador.Entrenador);
                     ugEquipoEntrenador.Children.Add(pokemonEntrenador);
                 }
 
             txtInteligencia.Text = "AI:" + entrenador.Inteligencia;
-            txtMoneyClass.Text = rom.EntrenadoresClases.Nombres[entrenador.TrainerClass];
+            txtMoneyClass.Text = rom.ClasesEntrenadores[entrenador.TrainerClass].Nombre;
             txtMusica.Text = "Musica:" + entrenador.MusicaBatalla;
             GenerarScript(entrenador);
 
@@ -154,7 +154,7 @@ namespace TrainerEditorUniversal
             bool[] isShiny = new bool[pokemonEquipo.Length];
             for (int i = 0; i < isShiny.Length; i++)
                 isShiny[i] = pokemonEquipo[i].IsShiny;
-            txtScript.Text = Shinytzer.ScriptLineaPokemonShinyEntrenador(entrenador, isShiny);
+            txtScript.Text = Shinyzer.SimpleScriptBattleShinyTrainer(rom.Entrenadores.IndexOf(entrenador),entrenador, isShiny);
         }
 
      

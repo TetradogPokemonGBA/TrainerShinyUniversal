@@ -6,71 +6,73 @@
         xmlns:local="clr-namespace:TrainerEditorUniversal"
         mc:Ignorable="d"
         Title="Universal Shiny Trainer" Height="350" Width="525">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="134*"/>
-            <ColumnDefinition Width="383*"/>
-        </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="59*"/>
-                <RowDefinition Height="5*"/>
-            </Grid.RowDefinitions>
-            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" >
-                <UniformGrid x:Name="ugEntrenadores"  Columns="2"/>
-            </ScrollViewer>
-            <ComboBox x:Name="cmbEntrenadores" Grid.Row="1" IsTextSearchEnabled="True" IsEditable="True" SelectionChanged="cmbEntrenadores_SelectionChanged" />
-        </Grid>
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="5*"/>
-            </Grid.RowDefinitions>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="123*" />
-                    <ColumnDefinition Width="260*" />
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="4*"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Image x:Name="imgEntrenador"/>
-                    <Viewbox Grid.Row="1" >
-                        <TextBlock x:Name="txtNombreEntrenador" HorizontalAlignment="Center" />
-                    </Viewbox>
-
-                </Grid>
-                
-                <Grid Grid.Column="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="2*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Viewbox Grid.Row="0">
-                            <TextBlock x:Name="txtMoneyClass" />
-                        </Viewbox>
-                        <Viewbox Grid.Row="1">
-                            <TextBlock x:Name="txtInteligencia"/>
-                        </Viewbox>
-                        <Viewbox Grid.Row="2">
-                            <TextBlock x:Name="txtMusica" />
-                        </Viewbox>
-                    </Grid>
-                    <TextBox x:Name="txtScript" Grid.Column="1" IsReadOnly="True" TextWrapping="Wrap"/>
-
-                </Grid>
-
-
-            </Grid>
-            <UniformGrid x:Name="ugEquipoEntrenador" Grid.Row="1"  Columns="3"/>
-        </Grid>
-    </Grid>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="134*"/>
+			<ColumnDefinition Width="383*"/>
+		</Grid.ColumnDefinitions>
+		<Grid Grid.Column="0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="59*"/>
+				<RowDefinition Height="5*"/>
+			</Grid.RowDefinitions>
+			<ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" >
+				<UniformGrid x:Name="ugEntrenadores"  Columns="2"/>
+			</ScrollViewer>
+			<ComboBox x:Name="cmbEntrenadores" Grid.Row="1" IsTextSearchEnabled="True" IsEditable="True" SelectionChanged="cmbEntrenadores_SelectionChanged" />
+		</Grid>
+		<Grid Grid.Column="1">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="3*"/>
+				<RowDefinition Height="5*"/>
+			</Grid.RowDefinitions>
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="123*" />
+					<ColumnDefinition Width="260*" />
+				</Grid.ColumnDefinitions>
+				<Grid Grid.Column="0">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="4*"/>
+						<RowDefinition/>
+					</Grid.RowDefinitions>
+					<Image x:Name="imgEntrenador"/>
+					<Viewbox Grid.Row="1" >
+						<TextBlock x:Name="txtNombreEntrenador" HorizontalAlignment="Center" />
+					</Viewbox>
+				
+				</Grid>
+				
+				<Grid Grid.Column="1">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="1*" />
+						<ColumnDefinition Width="2*" />
+					</Grid.ColumnDefinitions>
+					<Grid Grid.Column="0">
+						<Grid.RowDefinitions>
+							<RowDefinition/>
+							<RowDefinition/>
+							<RowDefinition/>
+						</Grid.RowDefinitions>
+						<Viewbox Grid.Row="0">
+							<TextBlock x:Name="txtMoneyClass" />
+						</Viewbox>
+						<Viewbox Grid.Row="1">
+							<TextBlock x:Name="txtInteligencia"/>
+						</Viewbox>
+						<Viewbox Grid.Row="2">
+							<TextBlock x:Name="txtMusica" />
+						</Viewbox>
+					</Grid>
+					<Viewbox Grid.Column="1">
+						<TextBox x:Name="txtScript" IsReadOnly="True" />
+					</Viewbox>
+				
+				</Grid>
+			
+			
+			</Grid>
+			<UniformGrid x:Name="ugEquipoEntrenador" Grid.Row="1"  Columns="3"/>
+		</Grid>
+	</Grid>
 </Window>
