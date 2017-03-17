@@ -19,75 +19,75 @@ using System.Drawing;
 
 namespace TrainerEditorUniversal
 {
-    /// <summary>
-    /// Lógica de interacción para PokemonEntrenador.xaml
-    /// </summary>
-    public partial class PokemonEntrenador : UserControl
-    {
-        private Entrenador entrenador;
-        private bool isShiny;
-        SpritesPokemon sprites;
-        public event EventHandler ShinyChanged;
+	/// <summary>
+	/// Lógica de interacción para PokemonEntrenador.xaml
+	/// </summary>
+	public partial class PokemonEntrenador : UserControl
+	{
+		private Entrenador entrenador;
+		private bool isShiny;
+		SpritesPokemon sprites;
+		public event EventHandler ShinyChanged;
 
-        public PokemonEntrenador(RomData rom, PokemonGBAFrameWork.PokemonEntrenador pokemon)
-        {
+		public PokemonEntrenador(RomData rom, PokemonGBAFrameWork.PokemonEntrenador pokemon)
+		{
 
-            InitializeComponent();
-            sprites = rom.Pokedex[pokemon.Especie].Sprites; 
-            txtNombre.Text += rom.Pokedex[pokemon.Especie].Nombre + " " + pokemon.Nivel;
-            IsShiny=false;
-            if (!(rom.Edicion.AbreviacionRom == AbreviacionCanon.AXV || rom.Edicion.AbreviacionRom == AbreviacionCanon.AXP))//NO TIENEN IMAGEN
-            {
-              /*  if (pokemon.Item > 0)
-                    imgObjeto.SetImage(rom.Objetos[pokemon.Item].ImagenObjeto);
-                else
-                    imgObjeto.SetImage(new Bitmap(1, 1));*/
-            }
+			InitializeComponent();
+			sprites = rom.Pokedex[pokemon.Especie].Sprites;
+			txtNombre.Text += rom.Pokedex[pokemon.Especie].Nombre + " " + pokemon.Nivel;
+			IsShiny=false;
+			if (!(rom.Edicion.AbreviacionRom == AbreviacionCanon.AXV || rom.Edicion.AbreviacionRom == AbreviacionCanon.AXP))//NO TIENEN IMAGEN
+			{
+				if (pokemon.Item > 0)
+					imgObjeto.SetImage(rom.Objetos[pokemon.Item].Sprite);
+				else
+					imgObjeto.SetImage(new Bitmap(1, 1));
+			}
 
 
-        }
+		}
 
-        public PokemonEntrenador(RomData rom, PokemonGBAFrameWork.PokemonEntrenador pokemon, Entrenador entrenador) : this(rom, pokemon)
-        {
-            this.Entrenador = entrenador;
-        }
+		public PokemonEntrenador(RomData rom, PokemonGBAFrameWork.PokemonEntrenador pokemon, Entrenador entrenador) : this(rom, pokemon)
+		{
+			this.Entrenador = entrenador;
+		}
 
-        public Entrenador Entrenador
-        {
-            get
-            {
-                return entrenador;
-            }
+		public Entrenador Entrenador
+		{
+			get
+			{
+				return entrenador;
+			}
 
-            set
-            {
-                entrenador = value;
-            }
-        }
+			set
+			{
+				entrenador = value;
+			}
+		}
 
-        public bool IsShiny {
-            get { return isShiny; }
-            set
-            {
-                isShiny = value;
+		public bool IsShiny {
+			get { return isShiny; }
+			set
+			{
+				isShiny = value;
 
-                if (ShinyChanged != null)
-                    ShinyChanged(this, new EventArgs());
+				if (ShinyChanged != null)
+					ShinyChanged(this, new EventArgs());
 
-                if(isShiny)
-                {
-                	imgPokemon.SetImage(sprites.SpritesFrontales[0][1]);
-                }
-                else
-                {
-                	imgPokemon.SetImage(sprites.SpritesFrontales[0][0]);
-                }
-            }
-        }
+				if(isShiny)
+				{
+					imgPokemon.SetImage(sprites.SpritesFrontales[0][1]);
+				}
+				else
+				{
+					imgPokemon.SetImage(sprites.SpritesFrontales[0][0]);
+				}
+			}
+		}
 
-        private void Grid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            IsShiny = !IsShiny;
-        }
-    }
+		private void Grid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			IsShiny = !IsShiny;
+		}
+	}
 }
