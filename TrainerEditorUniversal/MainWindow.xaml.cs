@@ -53,9 +53,9 @@ namespace TrainerEditorUniversal
 		private void ActivarDesactivar()
 		{
 			if (Shinyzer.EstaActivado(rom.Rom))
-				Shinyzer.Desactivar(rom.Rom);
+				Shinyzer.Desactivar(rom.Rom,rom.Edicion,rom.Compilacion);
 			else
-				Shinyzer.Activar(rom.Rom,rom.Edicion);
+				Shinyzer.Activar(rom.Rom,rom.Edicion,rom.Compilacion);
 			Guardar();
 			PonTexto();
 
@@ -97,7 +97,7 @@ namespace TrainerEditorUniversal
 					if (!Shinyzer.EstaActivado(rom.Rom))
 					{
 						if (MessageBox.Show("No esta instalada la rutina Shinitzer de HackMew, quieres instalarla?", "Atención", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
-						{ Shinyzer.Activar(rom.Rom,rom.Edicion); Guardar(); }
+						{ Shinyzer.Activar(rom.Rom,rom.Edicion,rom.Compilacion); Guardar(); }
 					}
 					PonTexto();
 					stkObjetosEntrenador.Children.Clear();
@@ -180,7 +180,7 @@ namespace TrainerEditorUniversal
 			bool[] isShiny = new bool[pokemonEquipo.Length];
 			for (int i = 0; i < isShiny.Length; i++)
 				isShiny[i] = pokemonEquipo[i].IsShiny;
-			txtScript.Text = Shinyzer.SimpleScriptBattleShinyTrainer(rom.Entrenadores.IndexOf(entrenador),entrenador, isShiny);
+			txtScript.Text = Shinyzer.SimpleScriptBattleShinyTrainerXSE(rom.Entrenadores.IndexOf(entrenador),entrenador, isShiny);
 		}
 
 		
