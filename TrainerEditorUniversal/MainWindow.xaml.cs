@@ -33,6 +33,16 @@ namespace TrainerEditorUniversal
 			MenuItem item;
 			InitializeComponent();
 
+			
+			item = new MenuItem();
+			item.Header = "Sobre";
+			item.Click += (s, e) =>{
+				if(MessageBox.Show("Este programa esta bajo licencia GNU, se ha hecho para facilitar la creación de scripts con el shinytzer créditos a Hackmew por la rutina, ¿Quieres ver el código fuente?","Sobre la app",MessageBoxButton.YesNo,MessageBoxImage.Information)==MessageBoxResult.Yes)
+					System.Diagnostics.Process.Start("https://github.com/TetradogPokemonGBA/TrainerShinyUniversal");
+				
+			};
+			menu.Items.Add(item);
+			
 			item = new MenuItem();
 			item.Header = "Cambiar Rom";
 			item.Click += (s, e) => PideRom();
@@ -109,7 +119,7 @@ namespace TrainerEditorUniversal
 		}
 		private void Guardar()
 		{
-			rom.Save();
+			rom.Rom.Save();
 		}
 
 		private void InicializaCampos()
