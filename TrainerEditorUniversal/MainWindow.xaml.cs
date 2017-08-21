@@ -27,6 +27,7 @@ namespace TrainerEditorUniversal
 	{
 		RomData rom;
 		MenuItem itemActivarDesactivar;
+		Script scriptActual;
 		public MainWindow()
 		{
 			ContextMenu menu = new ContextMenu();
@@ -186,11 +187,26 @@ namespace TrainerEditorUniversal
 
 		private void GenerarScript(Entrenador entrenador)
 		{
+			const bool ACABAENEND=true;
 			PokemonEntrenador[] pokemonEquipo = ugEquipoEntrenador.Children.OfType<PokemonEntrenador>().ToArray();
 			bool[] isShiny = new bool[pokemonEquipo.Length];
+			int offsetScript;
+			byte[] bytesScript;
 			for (int i = 0; i < isShiny.Length; i++)
 				isShiny[i] = pokemonEquipo[i].IsShiny;
-			txtScript.Text = Shinyzer.SimpleScriptBattleShinyTrainerXSE(rom.Entrenadores.IndexOf(entrenador),entrenador, isShiny);
+			
+			scriptActual=Shinyzer.SimpleScriptBattleShinyTrainer(rom.Rom,rom.Entrenadores.IndexOf(entrenador),entrenador, isShiny);
+			bytesScript=scriptActual.GetDeclaracion(rom.Rom,ACABAENEND);
+			offsetScript=rom.Rom.Data.SearchArray(bytesScript);
+			if(offsetScript>0){
+				txtOffsetScript.Text=(Hex)offsetScript;
+				btnInsertOrRemoveScript.Content="Quitar";
+			}else{
+				txtOffsetScript.Text="";
+				btnInsertOrRemoveScript.Content="Insertar";
+			}
+			txtBinScript.Text=(Hex)bytesScript;
+			txtScript.Text = scriptActual.GetDeclaracionXSE(ACABAENEND,"Entrenador"+entrenador.Nombre);
 		}
 
 		
@@ -199,6 +215,38 @@ namespace TrainerEditorUniversal
 		{
 			if (cmbEntrenadores.SelectedItem != null)
 				PonEntrenador(cmbEntrenadores.SelectedItem as Entrenador);
+		}
+		void BtnInsertOrRemoveScript_Click(object sender, RoutedEventArgs e)
+		{
+			const bool ACABAENEND=true;
+			byte[] bytesScript=scriptActual.GetDeclaracion(rom.Rom,ACABAENEND);
+			int offsetScript=rom.Rom.Data.SearchArray(bytesScript);
+			if(offsetScript>0)
+			{
+				rom.Rom.Data.Remove(offsetScript,bytesScript.Length);
+				btnInsertOrRemoveScript.Content="Insertar";
+				txtOffsetScript.Text="";
+			}
+			else
+			{
+				
+				btnInsertOrRemoveScript.Content="Quitar";
+				offsetScript=rom.Rom.Data.SearchEmptyBytes(bytesScript.Length);
+				rom.Rom.Data.SetArray(offsetScript,bytesScript);
+				txtOffsetScript.Text=(Hex)offsetScript;
+			}
+			try{
+			rom.Rom.Save();
+			}catch{
+				if(MessageBox.Show("No se ha podido guardar los datos,cierre cualquier otro programa que use esta rom y continua","Atención, imposible escribir en la ROM",MessageBoxButton.YesNo,MessageBoxImage.Error)==MessageBoxResult.Yes)
+					try{
+					rom.Rom.Save();
+				}catch{
+					MessageBox.Show("Mejor reinicia y repite de nuevo.","Continua igual...");
+				}
+			}
+				
+			   
 		}
 	}
 }
