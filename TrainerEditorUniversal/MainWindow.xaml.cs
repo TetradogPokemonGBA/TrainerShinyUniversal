@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -28,6 +30,7 @@ namespace TrainerEditorUniversal
 		RomData rom;
 		MenuItem itemActivarDesactivar;
 		Script scriptActual;
+		IList<KeyValuePair<int,Entrenador>>  entrenadorYSusbatallas;
 		public MainWindow()
 		{
 			ContextMenu menu = new ContextMenu();
@@ -81,7 +84,7 @@ namespace TrainerEditorUniversal
 		{
 			OpenFileDialog opn = new OpenFileDialog();
 			RomGba romGBA;
-			EntrenadorPreview entrenador=null;
+			EntrenadorPreview[] entrenadores;
 			opn.Filter = "GBA|*.gba";
 
 			if (opn.ShowDialog().GetValueOrDefault())
@@ -92,27 +95,24 @@ namespace TrainerEditorUniversal
 				try{
 					rom = new RomData(romGBA);
 					InicializaCampos();
-
-					for (int i = 0; i < rom.Entrenadores.Count; i++)
+					entrenadores=EntrenadorPreview.GetEntrenadoresPreview(rom.Entrenadores,rom.ClasesEntrenadores);
+					for (int i = 0; i < entrenadores.Length; i++)
 					{
-						entrenador = new EntrenadorPreview(i, rom.Entrenadores[i], rom.ClasesEntrenadores);
-						entrenador.MouseLeftButtonUp +=(s,e)=> PonEntrenador(s as EntrenadorPreview);
-						ugEntrenadores.Children.Add(entrenador);
-						cmbEntrenadores.Items.Add(rom.Entrenadores[i]);
+						entrenadores[i].MouseLeftButtonUp +=(s,e)=> PonEntrenador(s as EntrenadorPreview);
+						ugEntrenadores.Children.Add(entrenadores[i]);
+						cmbEntrenadores.Items.Add(entrenadores[i].Clone());
 
 					}
-
-					if (entrenador != null)
-						PonEntrenador(entrenador);
+					stkObjetosEntrenador.Children.Clear();
+					cmbEntrenadores.SelectedIndex=0;
 					Title = "Universal Shiny Trainer:"+ rom.Rom.Nombre;
 					if (!Shinyzer.EstaActivado(rom.Rom))
 					{
-						if (MessageBox.Show("No esta instalada la rutina Shinitzer de HackMew, quieres instalarla?", "Atención", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+						if (MessageBox.Show("No esta instalada la rutina Shinyzer de HackMew, quieres instalarla?", "Atención", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
 						{ Shinyzer.Activar(rom.Rom,rom.Edicion,rom.Compilacion); Guardar(); }
 					}
 					PonTexto();
-					stkObjetosEntrenador.Children.Clear();
-					cmbEntrenadores.SelectedIndex=0;
+					
 					
 				}catch{}
 
@@ -126,7 +126,7 @@ namespace TrainerEditorUniversal
 		private void InicializaCampos()
 		{
 			ugEntrenadores.Children.Clear();
-			ugEquipoEntrenador.Children.Clear();
+			tabBatallas.Items.Clear();
 			cmbEntrenadores.Items.Clear();
 			txtScript.Text = "";
 		}
@@ -135,67 +135,108 @@ namespace TrainerEditorUniversal
 
 		public void PonEntrenador(EntrenadorPreview entrenadorPreview)
 		{
-			PonEntrenador(entrenadorPreview.Entrenador);
+			
+			PonEntrenador(entrenadorPreview.Batallas);
 		}
-		public void PonEntrenador(Entrenador entrenador)
+		public void PonEntrenador(IList<KeyValuePair<int,Entrenador>> entrenadorYBatallas)
 		{
-			PokemonEntrenador pokemonEntrenador;
 			System.Windows.Controls.Image img;
-			txtNombreEntrenador.Text = entrenador.Nombre;
-			txtNombreEntrenador.Foreground=entrenador.EsUnaEntrenadora?System.Windows.Media.Brushes.HotPink:System.Windows.Media.Brushes.Blue;
+			PokemonEntrenador pokemonEntrenador;
+			UniformGrid ugEquipoEntrenador;
+			KeyValuePair<int,Entrenador> entrenador;
+			TabItem tbAct;
+			this.entrenadorYSusbatallas=entrenadorYBatallas;
+			
+			txtNombreEntrenador.Foreground=entrenadorYBatallas[0].Value.EsUnaEntrenadora?System.Windows.Media.Brushes.HotPink:System.Windows.Media.Brushes.Blue;
+
+			tabBatallas.SelectionChanged-=TabBatallas_SelectionChanged;
+			tabBatallas.Items.Clear();
+			for(int j=0;j<entrenadorYSusbatallas.Count;j++){
+				ugEquipoEntrenador=new UniformGrid();
+				ugEquipoEntrenador.Columns=3;
+				
+				entrenador=entrenadorYSusbatallas[j];
+				for (int i = 0; i < entrenador.Value.EquipoPokemon.Equipo.Length; i++)
+					if (entrenador.Value.EquipoPokemon.Equipo[i] != null)
+				{
+					pokemonEntrenador = new PokemonEntrenador(rom, entrenador.Value.EquipoPokemon.Equipo[i],entrenador.Value);
+					pokemonEntrenador.ShinyChanged += (s, e) =>{
+						GenerarScript(entrenador.Key,entrenador.Value);
+					};
+					ugEquipoEntrenador.Children.Add(pokemonEntrenador);
+				}
+				if(rom.Edicion.AbreviacionRom!=AbreviacionCanon.AXP&&rom.Edicion.AbreviacionRom!=AbreviacionCanon.AXV){
+					stkObjetosEntrenador.Children.Clear();
+					if(entrenador.Value.Item1>0){
+						img=new System.Windows.Controls.Image();
+						img.SetImage(rom.Objetos[entrenador.Value.Item1].Sprite);
+						stkObjetosEntrenador.Children.Add(img);
+					}
+					if(entrenador.Value.Item2>0){
+						img=new System.Windows.Controls.Image();
+						img.SetImage(rom.Objetos[entrenador.Value.Item2].Sprite);
+						stkObjetosEntrenador.Children.Add(img);
+					}
+					if(entrenador.Value.Item3>0){
+						img=new System.Windows.Controls.Image();
+						img.SetImage(rom.Objetos[entrenador.Value.Item3].Sprite);
+						stkObjetosEntrenador.Children.Add(img);
+					}
+					if(entrenador.Value.Item4>0){
+						img=new System.Windows.Controls.Image();
+						img.SetImage(rom.Objetos[entrenador.Value.Item4].Sprite);
+						stkObjetosEntrenador.Children.Add(img);
+					}}
+				tbAct=new TabItem();
+				if(entrenadorYSusbatallas.Count>1)
+					tbAct.Header=j+"";
+				
+				tbAct.Content=ugEquipoEntrenador;
+				tabBatallas.Items.Add(tbAct);
+			}
+			tabBatallas.SelectedIndex=0;
+			tabBatallas.SelectionChanged+=TabBatallas_SelectionChanged;
+			PonBatallaEntrenador(entrenadorYSusbatallas[0].Key,entrenadorYSusbatallas[0].Value);
+			
+			
+		}
+		void PonBatallaEntrenador(int index,Entrenador entrenador)
+		{
+			
+			
 			if (entrenador.SpriteIndex < rom.ClasesEntrenadores.Count)
 				imgEntrenador.SetImage(rom.ClasesEntrenadores[entrenador.SpriteIndex].Sprite);
 			else imgEntrenador.SetImage(new Bitmap(16, 16));
-
-			ugEquipoEntrenador.Children.Clear();
-			for (int i = 0; i < entrenador.EquipoPokemon.Equipo.Length; i++)
-				if (entrenador.EquipoPokemon.Equipo[i] != null)
-			{
-				pokemonEntrenador = new PokemonEntrenador(rom, entrenador.EquipoPokemon.Equipo[i],entrenador);
-				pokemonEntrenador.ShinyChanged += (s, e) => GenerarScript(pokemonEntrenador.Entrenador);
-				ugEquipoEntrenador.Children.Add(pokemonEntrenador);
-			}
-			
-			if(rom.Edicion.AbreviacionRom!=AbreviacionCanon.AXP&&rom.Edicion.AbreviacionRom!=AbreviacionCanon.AXV){
-				stkObjetosEntrenador.Children.Clear();
-				if(entrenador.Item1>0){
-					img=new System.Windows.Controls.Image();
-					img.SetImage(rom.Objetos[entrenador.Item1].Sprite);
-					stkObjetosEntrenador.Children.Add(img);
-				}
-				if(entrenador.Item2>0){
-					img=new System.Windows.Controls.Image();
-					img.SetImage(rom.Objetos[entrenador.Item2].Sprite);
-					stkObjetosEntrenador.Children.Add(img);
-				}
-				if(entrenador.Item3>0){
-					img=new System.Windows.Controls.Image();
-					img.SetImage(rom.Objetos[entrenador.Item3].Sprite);
-					stkObjetosEntrenador.Children.Add(img);
-				}
-				if(entrenador.Item4>0){
-					img=new System.Windows.Controls.Image();
-					img.SetImage(rom.Objetos[entrenador.Item4].Sprite);
-					stkObjetosEntrenador.Children.Add(img);
-				}}
+			txtNombreEntrenador.Text = (entrenador.Nombre!=""?entrenador.Nombre:"Sin nombre")+" - "+((Hex)(index+1)).ToString();
 			txtInteligencia.Text = "AI:" + entrenador.Inteligencia;
 			txtMoneyClass.Text = rom.ClasesEntrenadores[entrenador.TrainerClass].Nombre;
 			txtMusica.Text = "Musica:" + entrenador.MusicaBatalla;
-			GenerarScript(entrenador);
-
+			GenerarScript(index,entrenador);
 		}
 
-		private void GenerarScript(Entrenador entrenador)
+		string PonEspacios(string str)
+		{
+			StringBuilder strConEspacios=new StringBuilder();
+			for(int i=0;i<str.Length;i+=2)
+			{
+				strConEspacios.Append(str[i]);
+				strConEspacios.Append(str[i+1]);
+				strConEspacios.Append(" ");
+			}
+			strConEspacios.Remove(strConEspacios.Length-1,1);
+			return strConEspacios.ToString();
+		}
+		private void GenerarScript(int index,Entrenador entrenador)
 		{
 			const bool ACABAENEND=true;
-			PokemonEntrenador[] pokemonEquipo = ugEquipoEntrenador.Children.OfType<PokemonEntrenador>().ToArray();
+			PokemonEntrenador[] pokemonEquipo = ((UniformGrid)((TabItem)tabBatallas.Items[tabBatallas.SelectedIndex<0?0:tabBatallas.SelectedIndex]).Content).Children.OfType<PokemonEntrenador>().ToArray();
 			bool[] isShiny = new bool[pokemonEquipo.Length];
 			int offsetScript;
 			byte[] bytesScript;
 			for (int i = 0; i < isShiny.Length; i++)
 				isShiny[i] = pokemonEquipo[i].IsShiny;
 			
-			scriptActual=Shinyzer.SimpleScriptBattleShinyTrainer(rom.Rom,rom.Entrenadores.IndexOf(entrenador),entrenador, isShiny);
+			scriptActual=Shinyzer.SimpleScriptBattleShinyTrainer(rom.Rom,index,entrenador, isShiny);
 			bytesScript=scriptActual.GetDeclaracion(rom.Rom,ACABAENEND);
 			offsetScript=rom.Rom.Data.SearchArray(bytesScript);
 			if(offsetScript>0){
@@ -205,7 +246,7 @@ namespace TrainerEditorUniversal
 				txtOffsetScript.Text="";
 				btnInsertOrRemoveScript.Content="Insertar";
 			}
-			txtBinScript.Text=(Hex)bytesScript;
+			txtBinScript.Text=PonEspacios((string)(Hex)bytesScript);
 			txtScript.Text = scriptActual.GetDeclaracionXSE(ACABAENEND,"Entrenador"+entrenador.Nombre);
 		}
 
@@ -214,7 +255,7 @@ namespace TrainerEditorUniversal
 		private void cmbEntrenadores_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (cmbEntrenadores.SelectedItem != null)
-				PonEntrenador(cmbEntrenadores.SelectedItem as Entrenador);
+				PonEntrenador(cmbEntrenadores.SelectedItem as EntrenadorPreview);
 		}
 		void BtnInsertOrRemoveScript_Click(object sender, RoutedEventArgs e)
 		{
@@ -236,7 +277,7 @@ namespace TrainerEditorUniversal
 				txtOffsetScript.Text=(Hex)offsetScript;
 			}
 			try{
-			rom.Rom.Save();
+				rom.Rom.Save();
 			}catch{
 				if(MessageBox.Show("No se ha podido guardar los datos,cierre cualquier otro programa que use esta rom y continua","Atención, imposible escribir en la ROM",MessageBoxButton.YesNo,MessageBoxImage.Error)==MessageBoxResult.Yes)
 					try{
@@ -245,8 +286,12 @@ namespace TrainerEditorUniversal
 					MessageBox.Show("Mejor reinicia y repite de nuevo.","Continua igual...");
 				}
 			}
-				
-			   
+			
+			
+		}
+		void TabBatallas_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			PonBatallaEntrenador(entrenadorYSusbatallas[tabBatallas.SelectedIndex].Key,entrenadorYSusbatallas[tabBatallas.SelectedIndex].Value);
 		}
 	}
 }

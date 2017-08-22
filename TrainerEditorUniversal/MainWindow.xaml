@@ -97,7 +97,7 @@
 			
 			
 			</Grid>
-			<UniformGrid x:Name="ugEquipoEntrenador" Grid.Row="1"  Columns="3"/>
+			<TabControl x:Name="tabBatallas" Grid.Row="1" SelectionChanged="TabBatallas_SelectionChanged"/>
 		</Grid>
 	</Grid>
 </Window>
