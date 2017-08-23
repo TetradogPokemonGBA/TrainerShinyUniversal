@@ -96,6 +96,7 @@ namespace TrainerEditorUniversal
 					rom = new RomData(romGBA);
 					InicializaCampos();
 					entrenadores=EntrenadorPreview.GetEntrenadoresPreview(rom.Entrenadores,rom.ClasesEntrenadores);
+			
 					for (int i = 0; i < entrenadores.Count; i++)
 					{
 						entrenadores[i].MouseLeftButtonUp +=(s,e)=> PonEntrenador(s as EntrenadorPreview);
@@ -127,8 +128,12 @@ namespace TrainerEditorUniversal
 		private void InicializaCampos()
 		{
 			ugEntrenadores.Children.Clear();
+			tabBatallas.SelectionChanged-=TabBatallas_SelectionChanged;
 			tabBatallas.Items.Clear();
+			tabBatallas.SelectionChanged+=TabBatallas_SelectionChanged;
+			cmbEntrenadores.SelectionChanged-=cmbEntrenadores_SelectionChanged;
 			cmbEntrenadores.Items.Clear();
+			cmbEntrenadores.SelectionChanged+=cmbEntrenadores_SelectionChanged;
 			txtScript.Text = "";
 		}
 
