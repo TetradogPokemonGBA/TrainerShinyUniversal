@@ -66,7 +66,7 @@ namespace TrainerEditorUniversal
 
 		private void ActivarDesactivar()
 		{
-			if (Shinyzer.EstaActivado(rom.Rom))
+			if (Shinyzer.EstaActivado(rom.Rom,rom.Edicion,rom.Compilacion))
 				Shinyzer.Desactivar(rom.Rom,rom.Edicion,rom.Compilacion);
 			else
 				Shinyzer.Activar(rom.Rom,rom.Edicion,rom.Compilacion);
@@ -77,14 +77,14 @@ namespace TrainerEditorUniversal
 
 		private void PonTexto()
 		{
-			itemActivarDesactivar.Header = Shinyzer.EstaActivado(rom.Rom) ? "Desactivar" : "Activar";
+			itemActivarDesactivar.Header = Shinyzer.EstaActivado(rom.Rom,rom.Edicion,rom.Compilacion) ? "Desactivar" : "Activar";
 		}
 
 		private void PideRom()
 		{
 			OpenFileDialog opn = new OpenFileDialog();
 			RomGba romGBA;
-			EntrenadorPreview[] entrenadores;
+			IList<EntrenadorPreview> entrenadores;
 			opn.Filter = "GBA|*.gba";
 
 			if (opn.ShowDialog().GetValueOrDefault())
@@ -96,7 +96,7 @@ namespace TrainerEditorUniversal
 					rom = new RomData(romGBA);
 					InicializaCampos();
 					entrenadores=EntrenadorPreview.GetEntrenadoresPreview(rom.Entrenadores,rom.ClasesEntrenadores);
-					for (int i = 0; i < entrenadores.Length; i++)
+					for (int i = 0; i < entrenadores.Count; i++)
 					{
 						entrenadores[i].MouseLeftButtonUp +=(s,e)=> PonEntrenador(s as EntrenadorPreview);
 						ugEntrenadores.Children.Add(entrenadores[i]);
@@ -104,9 +104,10 @@ namespace TrainerEditorUniversal
 
 					}
 					stkObjetosEntrenador.Children.Clear();
+					ugEntrenadores.Children.Sort();
 					cmbEntrenadores.SelectedIndex=0;
 					Title = "Universal Shiny Trainer:"+ rom.Rom.Nombre;
-					if (!Shinyzer.EstaActivado(rom.Rom))
+					if (!Shinyzer.EstaActivado(rom.Rom,rom.Edicion,rom.Compilacion))
 					{
 						if (MessageBox.Show("No esta instalada la rutina Shinyzer de HackMew, quieres instalarla?", "Atención", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
 						{ Shinyzer.Activar(rom.Rom,rom.Edicion,rom.Compilacion); Guardar(); }
