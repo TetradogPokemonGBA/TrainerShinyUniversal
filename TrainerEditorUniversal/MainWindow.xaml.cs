@@ -191,8 +191,10 @@ namespace TrainerEditorUniversal
 					if (entrenador.Value.EquipoPokemon.Equipo[i] != null)
 				{
 					pokemonEntrenador = new PokemonEntrenador(rom, entrenador.Value.EquipoPokemon.Equipo[i],entrenador.Value);
+					pokemonEntrenador.Tag=entrenador;
 					pokemonEntrenador.ShinyChanged += (s, e) =>{
-						GenerarScript(entrenador.Key,entrenador.Value);
+						KeyValuePair<int,Entrenador> entrenadorAux=(KeyValuePair<int,Entrenador>)((PokemonEntrenador)s).Tag ;
+						GenerarScript(entrenadorAux.Key,entrenadorAux.Value);
 					};
 					ugEquipoEntrenador.Children.Add(pokemonEntrenador);
 				}
