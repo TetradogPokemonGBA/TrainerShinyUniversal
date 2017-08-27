@@ -52,11 +52,13 @@ namespace TrainerEditorUniversal
 			item.Click += (s, e) => PideRom();
 			menu.Items.Add(item);
 
+			//de mientras hasta que ponga bien el shinyzer
+			if(System.Diagnostics.Debugger.IsAttached){
 			itemActivarDesactivar = new MenuItem();
 			itemActivarDesactivar.Header = "Activar";
 			itemActivarDesactivar.Click += (s, e) => ActivarDesactivar();
 			menu.Items.Add(itemActivarDesactivar);
-
+			}
 			ContextMenu = menu;
 			menu=new ContextMenu();
 			item=new MenuItem();
@@ -111,10 +113,12 @@ namespace TrainerEditorUniversal
 			RomGba romGBA;
 			IList<EntrenadorPreview> entrenadores;
 			opn.Filter = "GBA|*.gba";
-
+			bool cargadoCorrecto=false;
+			while(!cargadoCorrecto)
 			if (opn.ShowDialog().GetValueOrDefault())
 			{
 
+				try{
 				romGBA = new RomGba(opn.FileName);
 				
 				try{
@@ -133,17 +137,25 @@ namespace TrainerEditorUniversal
 					ugEntrenadores.Children.Sort();
 					cmbEntrenadores.SelectedIndex=0;
 					Title = "Universal Shiny Trainer:"+ rom.Rom.Nombre;
-					if (!Shinyzer.EstaActivado(rom.Rom,rom.Edicion,rom.Compilacion))
+					if (System.Diagnostics.Debugger.IsAttached&&!Shinyzer.EstaActivado(rom.Rom,rom.Edicion,rom.Compilacion))
 					{
 						if (MessageBox.Show("No esta instalada la rutina Shinyzer de HackMew, quieres instalarla?", "Atención", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
 						{ Shinyzer.Activar(rom.Rom,rom.Edicion,rom.Compilacion); Guardar(); }
 					}
 					PonTexto();
+					cargadoCorrecto=true;
 					
-					
-				}catch{}
+				}catch{
+				
+					MessageBox.Show("Error inesperado mientras cargaba la rom");
+					cargadoCorrecto=true;
+				}
+				}catch{
+				cargadoCorrecto=	MessageBox.Show("No se ha podido cargar la rom, puede que tengas abierto otro programa que lo use, cierralo y vuelve a probar","Atención error al cargar la rom",MessageBoxButton.YesNo,MessageBoxImage.Error)==MessageBoxResult.No;
+				
+				}
 
-			}
+			}else cargadoCorrecto=true;
 		}
 		private void Guardar()
 		{
