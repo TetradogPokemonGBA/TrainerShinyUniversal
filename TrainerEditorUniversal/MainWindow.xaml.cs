@@ -58,7 +58,32 @@ namespace TrainerEditorUniversal
 			menu.Items.Add(itemActivarDesactivar);
 
 			ContextMenu = menu;
-
+			menu=new ContextMenu();
+			item=new MenuItem();
+			item.Header="Copiar Offset";
+			item.Click+=(s,m)=>{
+				Clipboard.SetText(txtOffsetScript.Text);
+			};
+			menu.Items.Add(item);
+			txtOffsetScript.ContextMenu=menu;
+			
+						menu=new ContextMenu();
+			item=new MenuItem();
+			item.Header="Copiar Script XSE";
+			item.Click+=(s,m)=>{
+				Clipboard.SetText(txtScript.Text);
+			};
+			menu.Items.Add(item);
+			txtScript.ContextMenu=menu;
+			
+						menu=new ContextMenu();
+			item=new MenuItem();
+			item.Header="Copiar Bin Hex";
+			item.Click+=(s,m)=>{
+				Clipboard.SetText(txtBinScript.Text);
+			};
+			menu.Items.Add(item);
+			txtBinScript.ContextMenu=menu;
 			PideRom();
 			if (rom == null)
 				this.Close();
