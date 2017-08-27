@@ -54,10 +54,10 @@ namespace TrainerEditorUniversal
 
 			//de mientras hasta que ponga bien el shinyzer
 			if(System.Diagnostics.Debugger.IsAttached){
-			itemActivarDesactivar = new MenuItem();
-			itemActivarDesactivar.Header = "Activar";
-			itemActivarDesactivar.Click += (s, e) => ActivarDesactivar();
-			menu.Items.Add(itemActivarDesactivar);
+				itemActivarDesactivar = new MenuItem();
+				itemActivarDesactivar.Header = "Activar";
+				itemActivarDesactivar.Click += (s, e) => ActivarDesactivar();
+				menu.Items.Add(itemActivarDesactivar);
 			}
 			ContextMenu = menu;
 			menu=new ContextMenu();
@@ -69,7 +69,7 @@ namespace TrainerEditorUniversal
 			menu.Items.Add(item);
 			txtOffsetScript.ContextMenu=menu;
 			
-						menu=new ContextMenu();
+			menu=new ContextMenu();
 			item=new MenuItem();
 			item.Header="Copiar Script XSE";
 			item.Click+=(s,m)=>{
@@ -78,7 +78,7 @@ namespace TrainerEditorUniversal
 			menu.Items.Add(item);
 			txtScript.ContextMenu=menu;
 			
-						menu=new ContextMenu();
+			menu=new ContextMenu();
 			item=new MenuItem();
 			item.Header="Copiar Bin Hex";
 			item.Click+=(s,m)=>{
@@ -104,7 +104,8 @@ namespace TrainerEditorUniversal
 
 		private void PonTexto()
 		{
-			itemActivarDesactivar.Header = Shinyzer.EstaActivado(rom.Rom,rom.Edicion,rom.Compilacion) ? "Desactivar" : "Activar";
+			if(System.Diagnostics.Debugger.IsAttached)
+				itemActivarDesactivar.Header = Shinyzer.EstaActivado(rom.Rom,rom.Edicion,rom.Compilacion) ? "Desactivar" : "Activar";
 		}
 
 		private void PideRom()
@@ -115,44 +116,44 @@ namespace TrainerEditorUniversal
 			opn.Filter = "GBA|*.gba";
 			bool cargadoCorrecto=false;
 			while(!cargadoCorrecto)
-			if (opn.ShowDialog().GetValueOrDefault())
+				if (opn.ShowDialog().GetValueOrDefault())
 			{
 
 				try{
-				romGBA = new RomGba(opn.FileName);
-				
-				try{
-					rom = new RomData(romGBA);
-					InicializaCampos();
-					entrenadores=EntrenadorPreview.GetEntrenadoresPreview(rom.Entrenadores,rom.ClasesEntrenadores);
-			
-					for (int i = 0; i < entrenadores.Count; i++)
-					{
-						entrenadores[i].MouseLeftButtonUp +=(s,e)=> PonEntrenador(s as EntrenadorPreview);
-						ugEntrenadores.Children.Add(entrenadores[i]);
-						cmbEntrenadores.Items.Add(entrenadores[i].Clone());
-
-					}
-					stkObjetosEntrenador.Children.Clear();
-					ugEntrenadores.Children.Sort();
-					cmbEntrenadores.SelectedIndex=0;
-					Title = "Universal Shiny Trainer:"+ rom.Rom.Nombre;
-					if (System.Diagnostics.Debugger.IsAttached&&!Shinyzer.EstaActivado(rom.Rom,rom.Edicion,rom.Compilacion))
-					{
-						if (MessageBox.Show("No esta instalada la rutina Shinyzer de HackMew, quieres instalarla?", "Atención", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
-						{ Shinyzer.Activar(rom.Rom,rom.Edicion,rom.Compilacion); Guardar(); }
-					}
-					PonTexto();
-					cargadoCorrecto=true;
+					romGBA = new RomGba(opn.FileName);
 					
+					try{
+						rom = new RomData(romGBA);
+						InicializaCampos();
+						entrenadores=EntrenadorPreview.GetEntrenadoresPreview(rom.Entrenadores,rom.ClasesEntrenadores);
+						
+						for (int i = 0; i < entrenadores.Count; i++)
+						{
+							entrenadores[i].MouseLeftButtonUp +=(s,e)=> PonEntrenador(s as EntrenadorPreview);
+							ugEntrenadores.Children.Add(entrenadores[i]);
+							cmbEntrenadores.Items.Add(entrenadores[i].Clone());
+
+						}
+						stkObjetosEntrenador.Children.Clear();
+						ugEntrenadores.Children.Sort();
+						cmbEntrenadores.SelectedIndex=0;
+						Title = "Universal Shiny Trainer:"+ rom.Rom.Nombre;
+						if (System.Diagnostics.Debugger.IsAttached&&!Shinyzer.EstaActivado(rom.Rom,rom.Edicion,rom.Compilacion))
+						{
+							if (MessageBox.Show("No esta instalada la rutina Shinyzer de HackMew, quieres instalarla?", "Atención", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+							{ Shinyzer.Activar(rom.Rom,rom.Edicion,rom.Compilacion); Guardar(); }
+						}
+						PonTexto();
+						cargadoCorrecto=true;
+						
+					}catch{
+						
+						MessageBox.Show("Error inesperado mientras cargaba la rom");
+						cargadoCorrecto=true;
+					}
 				}catch{
-				
-					MessageBox.Show("Error inesperado mientras cargaba la rom");
-					cargadoCorrecto=true;
-				}
-				}catch{
-				cargadoCorrecto=	MessageBox.Show("No se ha podido cargar la rom, puede que tengas abierto otro programa que lo use, cierralo y vuelve a probar","Atención error al cargar la rom",MessageBoxButton.YesNo,MessageBoxImage.Error)==MessageBoxResult.No;
-				
+					cargadoCorrecto=	MessageBox.Show("No se ha podido cargar la rom, puede que tengas abierto otro programa que lo use, cierralo y vuelve a probar","Atención error al cargar la rom",MessageBoxButton.YesNo,MessageBoxImage.Error)==MessageBoxResult.No;
+					
 				}
 
 			}else cargadoCorrecto=true;
