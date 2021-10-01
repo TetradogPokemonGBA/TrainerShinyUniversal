@@ -70,15 +70,15 @@ namespace TrainerEditorUniversal
 
 		public override string ToString()
 		{
-			return batallas[0].Value.Nombre != "" ? batallas[0].Value.Nombre : "Sin Nombres";
+			return !string.IsNullOrEmpty(batallas[0].Value.Nombre) ? batallas[0].Value.Nombre : "Sin Nombres";
 		}
-		public static List<EntrenadorPreview> GetEntrenadoresPreview(IList<Entrenador> entrenadores, IList<ClaseEntrenador> clasesEntrenador)
-		{
-			LlistaOrdenada<string, List<KeyValuePair<int, Entrenador>>> entrenadoresSeparadosPorBatallas = new LlistaOrdenada<string, List<KeyValuePair<int, Entrenador>>>();
-			LlistaOrdenada<int, List<KeyValuePair<int, Entrenador>>> entrenadoresSeparadosPorIndexSprite = new LlistaOrdenada<int, List<KeyValuePair<int, Entrenador>>>();
-			List<EntrenadorPreview> entrenadoresPreview = new List<EntrenadorPreview>();
+		public static IEnumerable<EntrenadorPreview> GetEntrenadoresPreview(IList<Entrenador> entrenadores, IList<ClaseEntrenador> clasesEntrenador)
+		{	
 			List<KeyValuePair<int, Entrenador>> auxList;
 			string nombre;
+			LlistaOrdenada<string, List<KeyValuePair<int, Entrenador>>> entrenadoresSeparadosPorBatallas = new LlistaOrdenada<string, List<KeyValuePair<int, Entrenador>>>();
+			LlistaOrdenada<int, List<KeyValuePair<int, Entrenador>>> entrenadoresSeparadosPorIndexSprite = new LlistaOrdenada<int, List<KeyValuePair<int, Entrenador>>>();
+
 			for (int i = 0; i < entrenadores.Count; i++)
 			{
 				nombre = entrenadores[i].Nombre;
@@ -99,9 +99,9 @@ namespace TrainerEditorUniversal
 					entrenadoresSeparadosPorIndexSprite.GetValue(auxList[j].Value.SpriteIndex).Add(auxList[j]);
 				}
 				for (int k = 0; k < entrenadoresSeparadosPorIndexSprite.Count; k++)
-					entrenadoresPreview.Add(new EntrenadorPreview(entrenadoresSeparadosPorIndexSprite.GetValueAt(k), clasesEntrenador));
+					yield return new EntrenadorPreview(entrenadoresSeparadosPorIndexSprite.GetValueAt(k), clasesEntrenador);
 			}
-			return entrenadoresPreview;
+	
 		}
 	}
 }

@@ -122,7 +122,7 @@ namespace TrainerEditorUniversal
 		private bool Load()
 		{
 			bool cargadoCorrecto;
-			IList<EntrenadorPreview> entrenadores;
+			IEnumerable<EntrenadorPreview> entrenadores;
 			Rom = new RomGba(LastRom);
 
 			try
@@ -135,11 +135,11 @@ namespace TrainerEditorUniversal
 				Pokedex = Pokemon.Get(Rom).ToArray();
 				entrenadores = EntrenadorPreview.GetEntrenadoresPreview(Entrenadores, ClasesEntrenador);
 
-				for (int i = 0; i < entrenadores.Count; i++)
+				foreach(EntrenadorPreview entrenador in entrenadores)
 				{
-					entrenadores[i].MouseLeftButtonUp += (s, e) => PonEntrenador(s as EntrenadorPreview);
-					ugEntrenadores.Children.Add(entrenadores[i]);
-					cmbEntrenadores.Items.Add(entrenadores[i].Clone());
+					entrenador.MouseLeftButtonUp += (s, e) => PonEntrenador(s as EntrenadorPreview);
+					ugEntrenadores.Children.Add(entrenador);
+					cmbEntrenadores.Items.Add(entrenador.Clone());
 
 				}
 				stkObjetosEntrenador.Children.Clear();
